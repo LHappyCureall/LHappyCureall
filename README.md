@@ -34,4 +34,4 @@ Focusing on **phase-field models**, **mass-preserving schemes**, and **high-perf
 
 ### 📊 Simulation Gallery
 <!-- 这里放你的 gif 动画 -->
-![Two-phase flow demo](./Re1000.mp4)
+[▶ 点击播放 Two-phase flow demo](./Re1000.mp4)
