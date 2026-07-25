@@ -15,14 +15,14 @@ Focusing on **phase-field models**, **mass-preserving schemes**, and **high-perf
 ---
 
 ### 💻 Tech Stack
-`C++` `PETSc` `libMesh` `MPI` `Python` `MATLAB` `FreeFem++` `ParaView`
+`C++` `PETSc` `libMesh` `Python` `MATLAB` `FreeFem++` `ParaView` `Tecplot`
 
 ---
 
 ### 🌱 Currently Working On
-- Fully-coupled, second-order energy-stable schemes for two-phase flows
-- Large-scale simulations with AMR on Tianhe supercomputer
-- Exploring Fourier Neural Operator (FNO) for accelerating NS solvers
+- Fully-coupled, second-order energy-stable schemes for two-phase flows with generalized Navier boundary conditions
+- Large-scale simulations on Tianhe supercomputer
+- Exploring Fourier Neural Operator (FNO)
 
 ---
 
