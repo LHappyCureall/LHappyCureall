@@ -48,3 +48,12 @@ Focusing on **phase-field models**, **mass-preserving schemes**, and **high-perf
 [![post-real-y](./gif/post-real-y.gif)](./post-real-y.mp4)
 [![post-real-z](./gif/post-real-z.gif)](./post-real-z.mp4)
 
+#### Droplet impact simulations on sawtooth, wavy structures under different contact angles
+[![post-60.gif](./gif/post-60.gif)](./post-60.mp4)
+[![post-150.gif](./gif/post-150.gif)](./post-150.mp4)
+[![sawtooth-60.gif](./gif/sawtooth-60.gif)](./sawtooth-60.mp4)
+[![sawtooth-150.gif](./gif/sawtooth-150.gif)](./sawtooth-150.mp4)
+[![wavy-60.gif](./gif/wavy-60.gif)](./wavy-60.mp4)
+[![wavy-150.gif](./gif/wavy-150.gif)](./wavy-150.mp4)
+
+
