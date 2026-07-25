@@ -34,4 +34,17 @@ Focusing on **phase-field models**, **mass-preserving schemes**, and **high-perf
 
 ### 📊 Simulation Gallery
 <!-- 这里放你的 gif 动画 -->
-[▶ 点击播放 Two-phase flow demo](./Re1000.mp4)
+#### Milkcrown Re = 20
+[![Re200](./gif/Re200.gif)](./Re20.mp4)
+
+#### Milkcrown Re = 500
+[![Re500](./gif/Re500.gif)](./Re500.mp4)
+
+#### Milkcrown Re = 1000
+[![Re1000](./gif/Re1000.gif)](./Re1000.mp4)
+
+
+#### Droplet on a post solid surface 
+[![post-real-y](./gif/post-real-y.gif)](./post-real-y.mp4)
+[![post-real-z](./gif/post-real-z.gif)](./post-real-z.mp4)
+
