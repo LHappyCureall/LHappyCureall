@@ -22,13 +22,14 @@ Focusing on **phase-field models**, **mass-preserving schemes**, and **high-perf
 ### 🌱 Currently Working On
 - Fully-coupled, second-order energy-stable schemes for two-phase flows with generalized Navier boundary conditions
 - Large-scale simulations on Tianhe supercomputer
-- Exploring Fourier Neural Operator (FNO)
+- Design a fully coupled, second-order numerical scheme with unconditional energy decay multiphase flow models with surfactants to simulate the impact of a drop on a substrate.
 
 ---
 
 ### 📫 Contact
 - Email: l18340091052@gmail.com
 - Academic: yc37477@umac.mo
+- Github: https://github.com/LHappyCureall
 
 ---
 
