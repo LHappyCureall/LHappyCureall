@@ -13,7 +13,7 @@ Focusing on **phase-field models**, **mass-preserving schemes**, and **high-perf
 - Adaptive mesh refinement (AMR)
 - Parallel nonlinear solvers (Newton-Krylov-Schwarz) on HPC platforms
 - Nonlinear preconditioners such as nonlinear elimination (NE), nonlinear elimination preconditioned inexact Newton (NEPIN)
-- Linear preconditioners such as 
+- Linear preconditioners such as two-level, constant two-level, linear elimination preconditioners
 
 ---
 
