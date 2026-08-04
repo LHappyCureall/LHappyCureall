@@ -6,11 +6,14 @@ Focusing on **phase-field models**, **mass-preserving schemes**, and **high-perf
 ---
 
 ### 🔭 Research Interests
-- Separate-Mass-Preserving Allen-Cahn-Navier-Stokes (SMP-ACNS) models
-- Energy-stable & fully-implicit FEM schemes
-- Moving contact lines with generalized Navier boundary conditions
-- Adaptive mesh refinement (AMR) with libMesh + PETSc
+- Two-phase incompressible flow model
+- Separate-Mass-Preserving Allen-Cahn-Navier-Stokes (SMP-ACNS) model
+- Moving contact lines with generalized Navier boundary conditions（GNBC）
+- Energy-stable & fully coupled fully-implicit FEM schemes
+- Adaptive mesh refinement (AMR)
 - Parallel nonlinear solvers (Newton-Krylov-Schwarz) on HPC platforms
+- Nonlinear preconditioners such as nonlinear elimination (NE), nonlinear elimination preconditioned inexact Newton (NEPIN)
+- Linear preconditioners such as 
 
 ---
 
