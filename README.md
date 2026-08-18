@@ -63,3 +63,8 @@ Focusing on **phase-field models**, **mass-preserving schemes**, and **high-perf
 [![wavy-150.gif](./gif/wavy-150.gif)](./wavy-150.mp4)
 
 
+#### Comparison of equilibrium profiles of clean (blue) and contaminated (red) droplets on different surfaces
+[![0814-60theta.gif](./gif/0814-60theta.gif)](./0814-60theta.mp4)
+[![0814-120theta.gif](./gif/0814-120theta.gif)](./0814-120theta.mp4)
+
+
