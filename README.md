@@ -1,7 +1,21 @@
-### Hi, I'm Haochen Liu 👋
+# Hi, I'm Haochen Liu 👋
 
 PhD Candidate in Computational Mathematics @ University of Macau  
 Focusing on **phase-field models**, **mass-preserving schemes**, and **high-performance finite element methods** for incompressible two-phase flows.
+
+[GitHub](https://github.com/LHappyCureall) · [Repositories](https://github.com/LHappyCureall?tab=repositories) · [Email](mailto:l18340091052@gmail.com) · [Simulation gallery](#-simulation-gallery)
+
+### 📈 GitHub at a Glance
+
+<a href="https://github.com/LHappyCureall">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="./assets/github-stats-dark.svg">
+    <source media="(prefers-color-scheme: light)" srcset="./assets/github-stats-light.svg">
+    <img alt="LHappyCureall's public GitHub statistics: repositories, stars received, forks received, followers, following, pull requests, and issues" src="./assets/github-stats-light.svg" width="860">
+  </picture>
+</a>
+
+<sub>Public GitHub activity. Stars and forks are received totals; issues and pull requests include open and closed items. [About these statistics](./.github/PROFILE-STATS.md).</sub>
 
 ---
 
@@ -64,7 +78,7 @@ Focusing on **phase-field models**, **mass-preserving schemes**, and **high-perf
 
 
 #### Comparison of equilibrium profiles of clean (blue) and contaminated (red) droplets on different surfaces
-[![0814-60theta.gif](./gif/0814-60theta.gif)](./0814-60theta.mp4)
-[![0814-120theta.gif](./gif/0814-120theta.gif)](./0814-120theta.mp4)
+[![0814-60theta.gif](./gif/0814-60theta.gif)](./gif/0814-60theta.gif)
+[![0814-120theta.gif](./gif/0814-120theta.gif)](./gif/0814-120theta.gif)
 
 
