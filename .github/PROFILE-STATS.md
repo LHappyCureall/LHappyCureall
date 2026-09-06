@@ -6,6 +6,15 @@ The profile embeds repository-hosted SVG cards in light and dark themes. The
 scheduled runs and disables scheduled workflows in public repositories after
 60 days without repository activity; re-enable the workflow if that happens.
 
+A Scheduled task in the desktop app also checks the published snapshot every day
+at 08:35 Asia/Macau. When today's update is missing and no statistics job is
+running, it requests a refresh by committing a new timestamp to
+`.github/profile-refresh-request.json`. This path is a push trigger for the same
+workflow, so the task can use ordinary Git authentication without a personal
+access token or additional Actions API permissions. The request file contains no
+statistics; the workflow still fetches all numbers directly from GitHub.
+The desktop app and computer must be running for this local backup check.
+
 No personal access token, paid service, or third-party statistics server is
 required. The script uses Python's standard library and the workflow's built-in
 `GITHUB_TOKEN`. The workflow only needs `contents: write` to save its own assets.

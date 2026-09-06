@@ -10,6 +10,7 @@ on:
     paths:
       - '.github/scripts/update_profile.py'
       - '.github/workflows/profile-stats.yml'
+      - '.github/profile-refresh-request.json'
 
 permissions:
   contents: write
