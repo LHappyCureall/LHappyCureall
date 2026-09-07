@@ -1,4 +1,4 @@
 {
-  "requested_at": "2026-09-07T06:59:51Z",
-  "reason": "User configured the read-only statistics secret; refresh aggregate commit totals."
+  "requested_at": "2026-09-07T07:11:59Z",
+  "reason": "User requested a one-time refresh of aggregate profile statistics."
 }
