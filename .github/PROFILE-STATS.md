@@ -1,7 +1,16 @@
 # Profile statistics
 
 The profile embeds repository-hosted SVG cards in light and dark themes. The
-`Update profile statistics` workflow refreshes them daily at approximately
+README uses direct `raw.githubusercontent.com` image URLs with a shared `?v=`
+version derived from the first 16 hexadecimal characters of SHA-256 over the
+rendered dark SVG followed by the light SVG. A change in either card changes all
+three image references, avoiding stale image URLs. Direct raw URLs avoid the
+GitHub `/raw/` redirect, which removes query parameters. The same snapshot also
+supplies a small text line with the three commit totals and its UTC update time,
+so the numbers remain readable while an image is loading or cached. Unavailable
+totals are labeled `unavailable`, never zero.
+
+The `Update profile statistics` workflow refreshes them daily at approximately
 08:23 Asia/Macau and can be run manually from the Actions tab. GitHub can delay
 scheduled runs and disables scheduled workflows in public repositories after
 60 days without repository activity; re-enable the workflow if that happens.
@@ -19,7 +28,7 @@ Public metrics use Python's standard library and the workflow's built-in
 `GITHUB_TOKEN`. The three commit totals also use the read-only
 `PROFILE_STATS_TOKEN` secret to access owned private repositories. The workflow
 continues to use its separate built-in token with `contents: write` only to save
-assets in this profile repository. No paid service or third-party statistics
+assets and the managed README block in this profile repository. No paid service or third-party statistics
 server is used.
 
 ## What the numbers mean
@@ -64,7 +73,7 @@ the repositories visible to the token; choose **All repositories** to cover all
 personal repositories, including repositories created later.
 
 No private repository name, URL, commit SHA, message, email, or source code is
-written to the SVG, JSON, or logs. API paths and error response bodies are omitted
+written to the SVG, JSON, README, or logs. API paths and error response bodies are omitted
 from error messages. Private data is aggregated in memory. Coding hours and
 visitor counts are not inferred.
 
@@ -95,7 +104,18 @@ lists with explicit author, default branch, and time-window filters.
 counts, and their UTC window boundaries. It contains no per-repository private
 records. Its exported keys are allowlisted.
 Failed requests or incomplete search results fail the run and leave the previous
-published cards in place.
+published cards and README in place.
+
+Keep exactly one `<!-- PROFILE-STATS:START -->` marker followed by exactly one
+`<!-- PROFILE-STATS:END -->` marker in `README.md`. The generator replaces only
+their contents; all bytes outside the markers, including line endings, are
+preserved. Edit surrounding profile content normally. Edits inside the managed
+block will be overwritten. The image URLs target this repository's `main` branch;
+update the generator if the repository is renamed or the default branch changes.
+All output is rendered and the markers validated before any file is written.
+The README is saved last, and the workflow commits it together with the three
+assets. README and asset changes are not workflow push triggers, avoiding a loop.
+Missing private access preserves the previous complete snapshot and README.
 
 To fetch fresh data locally, set `GITHUB_TOKEN` for public metrics and optionally
 `PROFILE_STATS_TOKEN` for private commit totals in your environment, then run
@@ -105,3 +125,6 @@ To render the last saved snapshot without network access:
 ```sh
 python .github/scripts/update_profile.py --snapshot assets/github-stats.json
 ```
+
+This offline command also refreshes the managed README block. To run regression
+checks without API access, use `python -m unittest discover -s .github/scripts -p 'test_*.py'`.

@@ -37,7 +37,7 @@ jobs:
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add assets/github-stats-dark.svg assets/github-stats-light.svg assets/github-stats.json
+          git add assets/github-stats-dark.svg assets/github-stats-light.svg assets/github-stats.json README.md
           if git diff --cached --quiet; then
             echo 'Statistics are already current.'
             exit 0

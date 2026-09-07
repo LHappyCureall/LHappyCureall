@@ -7,13 +7,17 @@ Focusing on **phase-field models**, **mass-preserving schemes**, and **high-perf
 
 ### 📈 GitHub at a Glance
 
+<!-- PROFILE-STATS:START -->
 <a href="https://github.com/LHappyCureall">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="./assets/github-stats-dark.svg">
-    <source media="(prefers-color-scheme: light)" srcset="./assets/github-stats-light.svg">
-    <img alt="LHappyCureall's GitHub statistics: public repositories and community activity, commits in the last 365 days, private commits in that period, and commits in the last 30 days" src="./assets/github-stats-light.svg" width="860">
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/LHappyCureall/LHappyCureall/main/assets/github-stats-dark.svg?v=315f693605b597b6">
+    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/LHappyCureall/LHappyCureall/main/assets/github-stats-light.svg?v=315f693605b597b6">
+    <img alt="LHappyCureall's GitHub statistics: public repositories and community activity, commits in the last 365 days, private commits in that period, and commits in the last 30 days" src="https://raw.githubusercontent.com/LHappyCureall/LHappyCureall/main/assets/github-stats-light.svg?v=315f693605b597b6" width="860">
   </picture>
 </a>
+
+<sub>Commits (365 days): 155 · Of which private: 133 · Commits (30 days): 24 · Updated 2026-09-07 07:12 UTC.</sub>
+<!-- PROFILE-STATS:END -->
 
 <sub>Repository and community metrics use public data. Commit totals cover my authored commits on default branches of accessible owned repositories, including private repositories; only aggregate counts are published. [Scope and counting rules](./.github/PROFILE-STATS.md).</sub>
 

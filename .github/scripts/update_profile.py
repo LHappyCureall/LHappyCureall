@@ -8,6 +8,7 @@ import argparse
 from collections import Counter
 from datetime import datetime, timedelta, timezone
 from html import escape
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -20,6 +21,8 @@ from urllib.request import Request, urlopen
 
 ROOT = Path(__file__).resolve().parents[2]
 API = "https://api.github.com"
+README_START = b"<!-- PROFILE-STATS:START -->"
+README_END = b"<!-- PROFILE-STATS:END -->"
 PALETTES = {
     "dark": dict(bg="#0d1117", panel="#161b22", line="#30363d", text="#e6edf3",
                  muted="#9da7b3", accent="#58a6ff", green="#3fb950"),
@@ -283,6 +286,37 @@ def render(data, theme):
     return "\n".join(parts) + "\n"
 
 
+def render_readme(original, data, cards):
+    """Replace only the uniquely marked block, retaining all other bytes."""
+    if original.count(README_START) != 1 or original.count(README_END) != 1:
+        raise ValueError("README statistics markers must each occur exactly once; no files written.")
+    start, end = original.index(README_START), original.index(README_END)
+    if start >= end:
+        raise ValueError("README statistics markers are reversed; no files written.")
+    newline = "\r\n" if original[start + len(README_START):].startswith(b"\r\n") else "\n"
+    # Fixed theme order; the version covers only allowlisted, rendered public output.
+    version = hashlib.sha256((cards["github-stats-dark.svg"] +
+                              cards["github-stats-light.svg"]).encode("utf-8")).hexdigest()[:16]
+    login = escape(data["login"], quote=True)
+    counts = data["commit_stats"]
+    complete = counts["status"] == "complete"
+    values = [f'{counts[key]:,}' if complete else "unavailable"
+              for key in ("total_365d", "private_365d", "total_30d")]
+    block = [
+        f'<a href="https://github.com/{login}">',
+        '  <picture>',
+        f'    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/LHappyCureall/LHappyCureall/main/assets/github-stats-dark.svg?v={version}">',
+        f'    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/LHappyCureall/LHappyCureall/main/assets/github-stats-light.svg?v={version}">',
+        f'    <img alt="{login}\'s GitHub statistics: public repositories and community activity, commits in the last 365 days, private commits in that period, and commits in the last 30 days" src="https://raw.githubusercontent.com/LHappyCureall/LHappyCureall/main/assets/github-stats-light.svg?v={version}" width="860">',
+        '  </picture>',
+        '</a>',
+        '',
+        f'<sub>Commits (365 days): {values[0]} · Of which private: {values[1]} · Commits (30 days): {values[2]} · Updated {escape(data["updated"])}.</sub>',
+    ]
+    return (original[:start + len(README_START)] +
+            (newline + newline.join(block) + newline).encode("utf-8") + original[end:])
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--user", default=os.environ.get("PROFILE_USER", "LHappyCureall"))
@@ -298,12 +332,18 @@ def main():
             raise RuntimeError("Private statistics access is missing; preserving the last complete snapshot.")
     outputs = {f"github-stats-{theme}.svg": render(data, theme) for theme in PALETTES}
     outputs["github-stats.json"] = json.dumps(data, indent=2, ensure_ascii=False) + "\n"
+    readme_path = ROOT / "README.md"
+    readme = render_readme(readme_path.read_bytes(), data, outputs)
+    # Finish rendering and marker validation before writing any output.
     assets.mkdir(exist_ok=True)
     for name, content in outputs.items():
         temporary = assets / (name + ".tmp")
         temporary.write_text(content, encoding="utf-8", newline="\n")
         temporary.replace(assets / name)
-    print("Updated profile assets: " + ", ".join(outputs))
+    temporary = readme_path.with_name("README.md.tmp")
+    temporary.write_bytes(readme)
+    temporary.replace(readme_path)
+    print("Updated profile assets and README: " + ", ".join(outputs))
 
 
 if __name__ == "__main__":
