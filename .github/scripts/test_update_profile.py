@@ -143,6 +143,8 @@ class CommitStatsTests(unittest.TestCase):
             (root / "README.md").write_bytes(README)
             for theme in stats.PALETTES:
                 (root / f"assets/github-stats-{theme}.svg").write_bytes(b"previous card " + theme.encode())
+            (root / "assets/profile-cards").mkdir()
+            (root / "assets/profile-cards/old.svg").write_bytes(b"previous version")
             before = {p.relative_to(root): p.read_bytes() for p in root.rglob("*") if p.is_file()}
             with patch.object(stats, "ROOT", root), patch.object(stats, "collect", return_value=current), patch("sys.argv", ["update_profile.py"]):
                 with self.assertRaises(RuntimeError):
@@ -158,14 +160,15 @@ class ReadmeTests(unittest.TestCase):
 
     def test_three_direct_urls_share_content_version_and_text_matches(self):
         result = stats.render_readme(README, self.data, self.cards).decode()
-        versions = re.findall(r'https://raw\.githubusercontent\.com/LHappyCureall/LHappyCureall/main/assets/github-stats-(dark|light)\.svg\?v=([0-9a-f]{16})', result)
+        versions = re.findall(r'https://raw\.githubusercontent\.com/LHappyCureall/LHappyCureall/main/assets/profile-cards/github-stats-(dark|light)-([0-9a-f]{16})\.svg', result)
         expected = hashlib.sha256((self.cards["github-stats-dark.svg"] + self.cards["github-stats-light.svg"]).encode()).hexdigest()[:16]
         self.assertEqual(versions, [("dark", expected), ("light", expected), ("light", expected)])
+        self.assertNotIn("?v=", result)
         self.assertIn("Commits (365 days): 155 · Of which private: 133 · Commits (30 days): 24", result)
         self.assertIn("Updated " + self.data["updated"], result)
         for theme in stats.PALETTES:
             changed = {**self.cards, f"github-stats-{theme}.svg": self.cards[f"github-stats-{theme}.svg"] + "\n"}
-            self.assertNotIn("?v=" + expected, stats.render_readme(README, self.data, changed).decode())
+            self.assertNotIn(expected, stats.render_readme(README, self.data, changed).decode())
 
     def test_idempotent_and_preserves_outside_bytes_and_line_endings(self):
         for original in (README, README.replace(b"\r\n", b"\n")):
@@ -198,6 +201,8 @@ class ReadmeTests(unittest.TestCase):
                 (root / "assets/github-stats.json").write_text(json.dumps(self.data), encoding="utf-8")
                 for theme in stats.PALETTES:
                     (root / f"assets/github-stats-{theme}.svg").write_bytes(b"old card")
+                (root / "assets/profile-cards").mkdir()
+                (root / "assets/profile-cards/old.svg").write_bytes(b"previous version")
                 before = {p.relative_to(root): p.read_bytes() for p in root.rglob("*") if p.is_file()}
                 with patch.object(stats, "ROOT", root), patch.object(stats, "collect", return_value=self.data), patch("sys.argv", ["update_profile.py"]), patch.object(Path, "write_text", side_effect=AssertionError("Write before validation")), patch.object(Path, "write_bytes", side_effect=AssertionError("Write before validation")):
                     with self.assertRaises(ValueError):
@@ -214,11 +219,54 @@ class ReadmeTests(unittest.TestCase):
             with patch.object(stats, "ROOT", root), patch.object(stats, "request_json", side_effect=AssertionError("Offline only")), patch("sys.argv", ["update_profile.py", "--snapshot", str(snapshot)]):
                 stats.main()
                 first = {p.relative_to(root): p.read_bytes() for p in root.rglob("*") if p.is_file()}
-                stats.main()
+                with patch.object(Path, "write_bytes", autospec=True, side_effect=Path.write_bytes) as writes:
+                    stats.main()
+                self.assertFalse(any("profile-cards" in call.args[0].parts for call in writes.call_args_list))
             self.assertEqual(first, {p.relative_to(root): p.read_bytes() for p in root.rglob("*") if p.is_file()})
             self.assertEqual(first[Path("README.md")], stats.render_readme(README, self.data, self.cards))
             for name, card in self.cards.items():
                 self.assertEqual(first[Path("assets") / name], card.encode())
+            version = stats.cards_version(self.cards)
+            for theme in stats.PALETTES:
+                path = Path(f"assets/profile-cards/github-stats-{theme}-{version}.svg")
+                self.assertEqual(first[path], first[Path(f"assets/github-stats-{theme}.svg")])
+            self.assertEqual(len(list((root / "assets/profile-cards").glob("*.svg"))), 2)
+
+    def test_changed_snapshot_adds_pair_and_retains_old_versions(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            (root / "README.md").write_bytes(README)
+            with patch.object(stats, "ROOT", root), patch.object(stats, "collect", return_value=self.data), patch("sys.argv", ["update_profile.py"]):
+                stats.main()
+                old = {p: p.read_bytes() for p in (root / "assets/profile-cards").glob("*.svg")}
+                self.data["commit_stats"]["total_365d"] += 1
+                stats.main()
+            self.assertEqual(len(list((root / "assets/profile-cards").glob("*.svg"))), 4)
+            for path, content in old.items():
+                self.assertEqual(path.read_bytes(), content)
+                self.assertNotIn(path.name.encode(), (root / "README.md").read_bytes())
+            for url in re.findall(rb'https://raw\.githubusercontent\.com/[^\"]+', (root / "README.md").read_bytes()):
+                name = url.decode().rsplit("/", 1)[1]
+                versioned = root / "assets/profile-cards" / name
+                self.assertTrue(versioned.is_file())
+                theme = "dark" if "-dark-" in name else "light"
+                self.assertEqual(versioned.read_bytes(), (root / f"assets/github-stats-{theme}.svg").read_bytes())
+
+    def test_version_conflict_fails_before_any_write(self):
+        for conflicting_theme in stats.PALETTES:
+            with self.subTest(theme=conflicting_theme), tempfile.TemporaryDirectory() as temp:
+                root = Path(temp)
+                (root / "README.md").write_bytes(README)
+                directory = root / "assets/profile-cards"
+                directory.mkdir(parents=True)
+                version = stats.cards_version(self.cards)
+                (directory / f"github-stats-{conflicting_theme}-{version}.svg").write_bytes(b"conflicting immutable content")
+                (root / "assets/github-stats.json").write_text(json.dumps(self.data))
+                before = {p.relative_to(root): p.read_bytes() for p in root.rglob("*") if p.is_file()}
+                with patch.object(stats, "ROOT", root), patch.object(stats, "collect", return_value=self.data), patch("sys.argv", ["update_profile.py"]), patch.object(Path, "write_text", side_effect=AssertionError("Write before validation")), patch.object(Path, "write_bytes", side_effect=AssertionError("Write before validation")):
+                    with self.assertRaisesRegex(ValueError, "different content"):
+                        stats.main()
+                self.assertEqual(before, {p.relative_to(root): p.read_bytes() for p in root.rglob("*") if p.is_file()})
 
 
 if __name__ == "__main__":

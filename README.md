@@ -10,9 +10,9 @@ Focusing on **phase-field models**, **mass-preserving schemes**, and **high-perf
 <!-- PROFILE-STATS:START -->
 <a href="https://github.com/LHappyCureall">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/LHappyCureall/LHappyCureall/main/assets/github-stats-dark.svg?v=3b830e18f6905604">
-    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/LHappyCureall/LHappyCureall/main/assets/github-stats-light.svg?v=3b830e18f6905604">
-    <img alt="LHappyCureall's GitHub statistics: public repositories and community activity, commits in the last 365 days, private commits in that period, and commits in the last 30 days" src="https://raw.githubusercontent.com/LHappyCureall/LHappyCureall/main/assets/github-stats-light.svg?v=3b830e18f6905604" width="860">
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/LHappyCureall/LHappyCureall/main/assets/profile-cards/github-stats-dark-3b830e18f6905604.svg">
+    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/LHappyCureall/LHappyCureall/main/assets/profile-cards/github-stats-light-3b830e18f6905604.svg">
+    <img alt="LHappyCureall's GitHub statistics: public repositories and community activity, commits in the last 365 days, private commits in that period, and commits in the last 30 days" src="https://raw.githubusercontent.com/LHappyCureall/LHappyCureall/main/assets/profile-cards/github-stats-light-3b830e18f6905604.svg" width="860">
   </picture>
 </a>
 

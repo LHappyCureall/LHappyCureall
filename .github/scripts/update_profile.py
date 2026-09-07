@@ -286,6 +286,12 @@ def render(data, theme):
     return "\n".join(parts) + "\n"
 
 
+def cards_version(cards):
+    """Version the allowlisted rendered output in a fixed theme order."""
+    return hashlib.sha256((cards["github-stats-dark.svg"] +
+                           cards["github-stats-light.svg"]).encode("utf-8")).hexdigest()[:16]
+
+
 def render_readme(original, data, cards):
     """Replace only the uniquely marked block, retaining all other bytes."""
     if original.count(README_START) != 1 or original.count(README_END) != 1:
@@ -294,9 +300,7 @@ def render_readme(original, data, cards):
     if start >= end:
         raise ValueError("README statistics markers are reversed; no files written.")
     newline = "\r\n" if original[start + len(README_START):].startswith(b"\r\n") else "\n"
-    # Fixed theme order; the version covers only allowlisted, rendered public output.
-    version = hashlib.sha256((cards["github-stats-dark.svg"] +
-                              cards["github-stats-light.svg"]).encode("utf-8")).hexdigest()[:16]
+    version = cards_version(cards)
     login = escape(data["login"], quote=True)
     counts = data["commit_stats"]
     complete = counts["status"] == "complete"
@@ -305,9 +309,9 @@ def render_readme(original, data, cards):
     block = [
         f'<a href="https://github.com/{login}">',
         '  <picture>',
-        f'    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/LHappyCureall/LHappyCureall/main/assets/github-stats-dark.svg?v={version}">',
-        f'    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/LHappyCureall/LHappyCureall/main/assets/github-stats-light.svg?v={version}">',
-        f'    <img alt="{login}\'s GitHub statistics: public repositories and community activity, commits in the last 365 days, private commits in that period, and commits in the last 30 days" src="https://raw.githubusercontent.com/LHappyCureall/LHappyCureall/main/assets/github-stats-light.svg?v={version}" width="860">',
+        f'    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/LHappyCureall/LHappyCureall/main/assets/profile-cards/github-stats-dark-{version}.svg">',
+        f'    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/LHappyCureall/LHappyCureall/main/assets/profile-cards/github-stats-light-{version}.svg">',
+        f'    <img alt="{login}\'s GitHub statistics: public repositories and community activity, commits in the last 365 days, private commits in that period, and commits in the last 30 days" src="https://raw.githubusercontent.com/LHappyCureall/LHappyCureall/main/assets/profile-cards/github-stats-light-{version}.svg" width="860">',
         '  </picture>',
         '</a>',
         '',
@@ -334,8 +338,23 @@ def main():
     outputs["github-stats.json"] = json.dumps(data, indent=2, ensure_ascii=False) + "\n"
     readme_path = ROOT / "README.md"
     readme = render_readme(readme_path.read_bytes(), data, outputs)
-    # Finish rendering and marker validation before writing any output.
+    version = cards_version(outputs)
+    versioned = {assets / "profile-cards" / f"github-stats-{theme}-{version}.svg":
+                 outputs[f"github-stats-{theme}.svg"].encode("utf-8") for theme in PALETTES}
+    pending = {}
+    for path, content in versioned.items():
+        if path.exists():
+            if path.read_bytes() != content:
+                raise ValueError("Existing versioned card has different content; no files written.")
+        else:
+            pending[path] = content
+    # Finish all rendering, marker and immutability checks before any output writes.
     assets.mkdir(exist_ok=True)
+    (assets / "profile-cards").mkdir(exist_ok=True)
+    for path, content in pending.items():
+        temporary = path.with_suffix(".svg.tmp")
+        temporary.write_bytes(content)
+        temporary.replace(path)
     for name, content in outputs.items():
         temporary = assets / (name + ".tmp")
         temporary.write_text(content, encoding="utf-8", newline="\n")

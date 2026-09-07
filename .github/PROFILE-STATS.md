@@ -1,11 +1,12 @@
 # Profile statistics
 
 The profile embeds repository-hosted SVG cards in light and dark themes. The
-README uses direct `raw.githubusercontent.com` image URLs with a shared `?v=`
-version derived from the first 16 hexadecimal characters of SHA-256 over the
+README uses direct `raw.githubusercontent.com` image URLs to immutable files in
+`assets/profile-cards/`. Both filenames include a shared version derived from
+the first 16 hexadecimal characters of SHA-256 over the
 rendered dark SVG followed by the light SVG. A change in either card changes all
-three image references, avoiding stale image URLs. Direct raw URLs avoid the
-GitHub `/raw/` redirect, which removes query parameters. The same snapshot also
+three image paths. New content therefore receives a new filename instead of
+depending on cache handling of query parameters. The same snapshot also
 supplies a small text line with the three commit totals and its UTC update time,
 so the numbers remain readable while an image is loading or cached. Unavailable
 totals are labeled `unavailable`, never zero.
@@ -113,8 +114,14 @@ preserved. Edit surrounding profile content normally. Edits inside the managed
 block will be overwritten. The image URLs target this repository's `main` branch;
 update the generator if the repository is renamed or the default branch changes.
 All output is rendered and the markers validated before any file is written.
-The README is saved last, and the workflow commits it together with the three
-assets. README and asset changes are not workflow push triggers, avoiding a loop.
+Existing versioned files must match the rendered bytes exactly; a mismatch fails
+before writes. Identical versioned files are reused. New versioned SVGs are saved
+first, followed by the three canonical assets, and the README last. The workflow
+commits these together. Keep all old versioned SVGs so cached older READMEs still
+resolve; the generator never removes them. Each changed snapshot adds two small
+SVG files. README and asset changes are not workflow push triggers, avoiding a loop.
+The `.gitattributes` rule keeps versioned SVGs at LF line endings across platforms
+so their checked-out bytes match the content used to generate their version.
 Missing private access preserves the previous complete snapshot and README.
 
 To fetch fresh data locally, set `GITHUB_TOKEN` for public metrics and optionally
