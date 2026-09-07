@@ -1,12 +1,12 @@
-"""Generate GitHub profile cards from public GitHub REST API data.
+"""Generate profile cards, publishing only aggregate private commit counts.
 
-Only the Python standard library and the workflow's GITHUB_TOKEN are needed.
+Public metrics use GITHUB_TOKEN; commit totals require PROFILE_STATS_TOKEN.
 All API requests must succeed before any existing assets are replaced.
 """
 
 import argparse
 from collections import Counter
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from html import escape
 import json
 import os
@@ -32,11 +32,21 @@ LANGUAGE_COLORS = {"Python": "#3572A5", "C++": "#f34b7d", "C": "#7185af",
                    "JavaScript": "#c9a227", "HTML": "#e34c26"}
 
 
-def request_json(path):
+class GitHubAPIError(RuntimeError):
+    """An API failure that never includes repository paths or response contents."""
+
+    def __init__(self, status, empty_repository=False):
+        super().__init__(f"GitHub API request failed (HTTP {status}); previous cards retained.")
+        self.status = status
+        self.empty_repository = empty_repository
+
+
+def request_json(path, token=None):
     headers = {"Accept": "application/vnd.github+json",
                "User-Agent": "LHappyCureall-profile-stats",
                "X-GitHub-Api-Version": "2022-11-28"}
-    token = os.environ.get("GITHUB_TOKEN")
+    if token is None:
+        token = os.environ.get("GITHUB_TOKEN")
     if token:
         headers["Authorization"] = f"Bearer {token}"
     for attempt in range(3):
@@ -44,17 +54,96 @@ def request_json(path):
             with urlopen(Request(API + path, headers=headers), timeout=30) as response:
                 return json.load(response)
         except HTTPError as exc:
+            empty_repository = False
+            if exc.code == 409:
+                try:
+                    empty_repository = json.load(exc).get("message", "").lower() == "git repository is empty."
+                except (ValueError, AttributeError):
+                    pass
             if exc.code not in (429, 500, 502, 503, 504) or attempt == 2:
-                raise RuntimeError(f"GitHub API returned HTTP {exc.code} for {path}") from None
+                raise GitHubAPIError(exc.code, empty_repository) from None
         except (URLError, TimeoutError):
             if attempt == 2:
-                raise RuntimeError(f"GitHub API request failed for {path}") from None
+                raise RuntimeError("GitHub API connection failed; previous cards retained.") from None
         time.sleep(2 ** (attempt + 1))
+
+
+def iso_utc(value):
+    return value.astimezone(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
+
+
+def collect_commit_stats(login, now, token):
+    """Count unique authored SHAs in accessible owned repos' default branches.
+
+    Repository names, commit messages, hashes, and raw API responses stay in memory.
+    The returned object contains only the three requested counts and their scope.
+    """
+    if not token:
+        return {"status": "not_configured", "total_365d": None,
+                "private_365d": None, "total_30d": None}
+
+    identity = request_json("/user", token=token)
+    if identity["login"].lower() != login.lower():
+        raise RuntimeError("The statistics token must belong to the profile owner.")
+    repos, page = [], 1
+    while True:
+        batch = request_json(f"/user/repos?affiliation=owner&visibility=all&per_page=100&page={page}", token=token)
+        repos.extend(r for r in batch if r["owner"]["login"].lower() == login.lower())
+        if len(batch) < 100:
+            break
+        page += 1
+
+    # Detect limited repository selection when GitHub exposes account totals.
+    for field, private in (("public_repos", False), ("owned_private_repos", True)):
+        expected = identity.get(field)
+        if expected is not None and sum(r["private"] == private for r in repos) != expected:
+            raise RuntimeError("Statistics token does not expose every owned repository; totals were not published.")
+
+    start_year, start_month = now - timedelta(days=365), now - timedelta(days=30)
+    all_commits, private_commits, month_commits = set(), set(), set()
+    for repo in repos:
+        page = 1
+        while True:
+            query = urlencode({"sha": repo["default_branch"], "author": login,
+                               "since": iso_utc(start_year), "until": iso_utc(now),
+                               "per_page": 100, "page": page})
+            try:
+                batch = request_json(f'/repos/{repo["full_name"]}/commits?{query}', token=token)
+            except GitHubAPIError as exc:
+                if exc.empty_repository and page == 1:
+                    break
+                raise
+            for item in batch:
+                # GitHub-linked author identity excludes other authors and bots.
+                if (item.get("author") or {}).get("login", "").lower() != login.lower():
+                    continue
+                stamp = datetime.fromisoformat(item["commit"]["committer"]["date"].replace("Z", "+00:00"))
+                if stamp.tzinfo is None:
+                    raise RuntimeError("Commit timestamp is missing a time zone; totals were not published.")
+                if not start_year <= stamp <= now:
+                    continue
+                sha = item["sha"]
+                all_commits.add(sha)
+                if repo["private"]:
+                    private_commits.add(sha)
+                if stamp >= start_month:
+                    month_commits.add(sha)
+            if len(batch) < 100:
+                break
+            page += 1
+    return {"status": "complete", "total_365d": len(all_commits),
+            "private_365d": len(private_commits), "total_30d": len(month_commits),
+            "window_end": iso_utc(now), "since_365d": iso_utc(start_year),
+            "since_30d": iso_utc(start_month),
+            "repository_scope": "owned_repositories_accessible_to_token",
+            "branch_scope": "default_branch", "date_basis": "committer_date",
+            "deduplication": "commit_sha_across_repositories"}
 
 
 def collect(login):
     if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9-]{0,38}", login):
         raise ValueError("Invalid GitHub username")
+    now = datetime.now(timezone.utc)
     user = request_json(f"/users/{login}")
     repos, page = [], 1
     while True:
@@ -76,7 +165,7 @@ def collect(login):
     return {
         "login": user["login"],
         "joined": user["created_at"][:10],
-        "updated": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
+        "updated": now.strftime("%Y-%m-%d %H:%M UTC"),
         "public_repos": len(repos), "source_repos": len(sources),
         "stars_received": sum(r["stargazers_count"] for r in repos),
         "forks_received": sum(r["forks_count"] for r in repos),
@@ -84,17 +173,41 @@ def collect(login):
         "pull_requests": count("pr"), "issues": count("issue"),
         "languages": dict(sorted(Counter(r["language"] for r in sources if r["language"]).items(),
                                  key=lambda item: (-item[1], item[0]))),
-        "scope": "Public data only. Repository totals include owned forks; source repos exclude forks. "
+        "commit_stats": collect_commit_stats(login, now, os.environ.get("PROFILE_STATS_TOKEN")),
+        "scope": "Repository and community metrics use public data. Commit totals include public and private "
+                 "owned repositories accessible to the statistics token, default branches only, deduplicated by SHA, "
+                 "filtered to the owner's GitHub-linked author identity and committer dates. "
+                 "Only aggregate private counts are published. Repository totals include owned forks; source repos exclude forks. "
                  "Stars and forks are received totals across owned public repos. Issues and PRs are "
                  "all-time authored public items (open and closed). Languages count the primary "
                  "language of each non-fork public repo, not code bytes or proficiency.",
     }
 
 
+def publishable_snapshot(data):
+    """Allowlist exported fields so auxiliary API data can never enter the JSON."""
+    public_fields = ("login", "joined", "updated", "public_repos", "source_repos", "stars_received",
+                     "forks_received", "followers", "following", "pull_requests", "issues", "languages", "scope")
+    result = {key: data[key] for key in public_fields}
+    stats = data.get("commit_stats", {"status": "not_configured"})
+    fields = ("status", "total_365d", "private_365d", "total_30d", "window_end", "since_365d",
+              "since_30d", "repository_scope", "branch_scope", "date_basis", "deduplication")
+    result["commit_stats"] = {key: stats[key] for key in fields if key in stats}
+    if stats["status"] not in ("complete", "not_configured"):
+        raise ValueError("Invalid commit statistics state")
+    if stats["status"] == "complete":
+        for key in ("total_365d", "private_365d", "total_30d"):
+            if type(stats.get(key)) is not int or stats[key] < 0:
+                raise ValueError("Incomplete commit statistics")
+        if max(stats["private_365d"], stats["total_30d"]) > stats["total_365d"]:
+            raise ValueError("Commit subtotals exceed the total")
+    return result
+
+
 def render(data, theme):
     p = PALETTES[theme]
     languages = list(data["languages"].items())
-    height = 530 if languages else 405
+    height = 722 if languages else 597
     if len(languages) > 4:
         languages = languages[:3] + [("Other", sum(n for _, n in languages[3:]))]
     parts = [f'<svg xmlns="http://www.w3.org/2000/svg" width="860" height="{height}" '
@@ -134,20 +247,36 @@ def render(data, theme):
             text(end, y, f'{data[key]:,}', 21, p["text"], 600, "end")
 
     line(32, 351, 828, 351)
+    text(32, 383, "Commit activity", 19, p["accent"], 600)
+    stats = data.get("commit_stats", {})
+    complete = stats.get("status") == "complete"
+    for i, (label, key) in enumerate((("Total commits · 365 days", "total_365d"),
+                                    ("Of which private · 365 days", "private_365d"),
+                                    ("Total commits · 30 days", "total_30d"))):
+        x = 32 + i * 273
+        parts.append(f'<rect x="{x}" y="400" width="250" height="98" rx="10" fill="{p["panel"]}"/>')
+        text(x + 16, 427, label, 13, p["muted"])
+        value = f'{stats[key]:,}' if complete else "—"
+        text(x + 16, 473, value, 32, p["text"], 650)
+    note = "Owned repos available to the token · Default branches · Unique authored commits"
+    if not complete:
+        note = "Commit totals await private-repository access; unavailable values are not zero."
+    text(32, 524, note, 12, p["muted"])
+    line(32, 543, 828, 543)
     if languages:
-        text(32, 383, "Languages in public source repositories", 16, p["accent"], 600)
+        text(32, 575, "Languages in public source repositories", 16, p["accent"], 600)
         total = sum(n for _, n in languages)
         x = 32
         for i, (language, count) in enumerate(languages):
             color = LANGUAGE_COLORS.get(language, ["#58a6ff", "#a371f7", "#2ea88f", "#8b949e"][i % 4])
             width = 796 * count / total
-            parts.append(f'<rect x="{x:.2f}" y="399" width="{width:.2f}" height="9" fill="{color}"/>')
+            parts.append(f'<rect x="{x:.2f}" y="591" width="{width:.2f}" height="9" fill="{color}"/>')
             x += width
             lx = 32 + (i % 2) * 429
-            ly = 434 + (i // 2) * 24
+            ly = 626 + (i // 2) * 24
             parts.append(f'<circle cx="{lx + 4}" cy="{ly - 5}" r="4" fill="{color}"/>')
             text(lx + 16, ly, f"{language} · {count} {'repo' if count == 1 else 'repos'}", 13, p["muted"])
-    footer = "Public data only · Languages by repository count" if languages else "Public data only · Issues / PRs: all time"
+    footer = "Private activity: aggregate commit counts only" if complete else "Repository / community metrics: public data"
     text(32, height - 36, footer, 12, p["muted"])
     text(828, height - 14, "Updated " + data["updated"], 12, p["muted"], anchor="end")
     parts.extend(["</g>", "</svg>"])
@@ -160,7 +289,13 @@ def main():
     parser.add_argument("--snapshot", type=Path, help="Render an existing JSON snapshot without API access")
     args = parser.parse_args()
     data = json.loads(args.snapshot.read_text(encoding="utf-8")) if args.snapshot else collect(args.user)
+    data = publishable_snapshot(data)
     assets = ROOT / "assets"
+    previous_path = assets / "github-stats.json"
+    if not args.snapshot and data["commit_stats"]["status"] != "complete" and previous_path.exists():
+        previous = json.loads(previous_path.read_text(encoding="utf-8"))
+        if previous.get("commit_stats", {}).get("status") == "complete":
+            raise RuntimeError("Private statistics access is missing; preserving the last complete snapshot.")
     outputs = {f"github-stats-{theme}.svg": render(data, theme) for theme in PALETTES}
     outputs["github-stats.json"] = json.dumps(data, indent=2, ensure_ascii=False) + "\n"
     assets.mkdir(exist_ok=True)

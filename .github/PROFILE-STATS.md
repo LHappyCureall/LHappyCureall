@@ -15,9 +15,12 @@ access token or additional Actions API permissions. The request file contains no
 statistics; the workflow still fetches all numbers directly from GitHub.
 The desktop app and computer must be running for this local backup check.
 
-No personal access token, paid service, or third-party statistics server is
-required. The script uses Python's standard library and the workflow's built-in
-`GITHUB_TOKEN`. The workflow only needs `contents: write` to save its own assets.
+Public metrics use Python's standard library and the workflow's built-in
+`GITHUB_TOKEN`. The three commit totals also use the read-only
+`PROFILE_STATS_TOKEN` secret to access owned private repositories. The workflow
+continues to use its separate built-in token with `contents: write` only to save
+assets in this profile repository. No paid service or third-party statistics
+server is used.
 
 ## What the numbers mean
 
@@ -33,20 +36,70 @@ required. The script uses Python's standard library and the workflow's built-in
   not a code-byte percentage or a measure of proficiency. More than four languages
   are displayed as the top three plus Other.
 
-Private repositories and private activity are excluded. Coding hours and visitor
-counts are not inferred from GitHub data.
+The repository, star, fork, follower, issue, PR, and language figures above remain
+public-only. Only the following three metrics include private activity:
+
+- **Total commits · 365 days:** unique commits authored by this GitHub account in
+  the rolling last 365 days across owned repositories accessible to the token.
+- **Of which private · 365 days:** the subset of those unique commits found in at
+  least one owned private repository.
+- **Total commits · 30 days:** unique authored commits in the rolling last 30 days
+  across the same public and private repositories.
+
+Each repository's default branch is used, including owned forks. Identical commit
+SHAs across repositories count once in the total. A commit present in both a
+public and a private repository counts once in the total and once in the private
+subset. Attribution uses the GitHub-linked **author**, excluding other authors
+and automation bots. Dates use the **committer timestamp** in UTC with inclusive
+window boundaries. These are commit counts, not GitHub contribution-calendar
+counts; unmerged branches and commits not linked to this account are excluded.
+
+All requests and pagination must finish before results are published. Missing
+private access initially displays dashes, never zero. An invalid/expired token,
+inaccessible repository, incomplete response, or subsequently removed secret
+fails the run and retains the last complete snapshot. When the authenticated user
+API supplies account repository totals, the script checks them against the
+repository list to detect incomplete token access. Otherwise the scope remains
+the repositories visible to the token; choose **All repositories** to cover all
+personal repositories, including repositories created later.
+
+No private repository name, URL, commit SHA, message, email, or source code is
+written to the SVG, JSON, or logs. API paths and error response bodies are omitted
+from error messages. Private data is aggregated in memory. Coding hours and
+visitor counts are not inferred.
+
+## Enable private commit statistics (one-time setup)
+
+1. Create a [fine-grained personal access token](https://github.com/settings/personal-access-tokens/new)
+   for resource owner **LHappyCureall**, with **All repositories** and repository
+   permission **Contents: Read-only**. Metadata read access is implicit. Leave
+   write permissions disabled and choose an expiration appropriate for you.
+2. In this profile repository's [Actions secrets](https://github.com/LHappyCureall/LHappyCureall/settings/secrets/actions),
+   add a repository secret named **PROFILE_STATS_TOKEN**, with that token as the
+   value. Paste it directly into GitHub; never send it in chat or commit it.
+3. From Actions, manually run **Update profile statistics**, or let the next
+   daily run refresh the card. Merely adding a secret does not trigger a run.
+
+On token expiry, replace the secret and rerun the workflow. The public profile
+exposes only the three aggregate numbers; the private repositories remain private.
 
 ## Maintenance
 
 Data comes from the official [GitHub REST API](https://docs.github.com/en/rest):
 `GET /users/{login}`, paginated `GET /users/{login}/repos`, and
 `GET /search/issues` with `author:`, `is:public`, and `is:pr` / `is:issue` filters.
-`assets/github-stats.json` records the public aggregate snapshot and its timestamp.
+Commit metrics additionally use authenticated `GET /user`, paginated
+`GET /user/repos?affiliation=owner&visibility=all`, and paginated repository commit
+lists with explicit author, default branch, and time-window filters.
+`assets/github-stats.json` records the aggregate snapshot, the three commit
+counts, and their UTC window boundaries. It contains no per-repository private
+records. Its exported keys are allowlisted.
 Failed requests or incomplete search results fail the run and leave the previous
 published cards in place.
 
-To fetch fresh data locally, optionally set `GITHUB_TOKEN` in your environment and
-run `python .github/scripts/update_profile.py`. Never put a token in a file.
+To fetch fresh data locally, set `GITHUB_TOKEN` for public metrics and optionally
+`PROFILE_STATS_TOKEN` for private commit totals in your environment, then run
+`python .github/scripts/update_profile.py`. Never put a token in a file.
 To render the last saved snapshot without network access:
 
 ```sh

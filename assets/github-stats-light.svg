@@ -1,7 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="860" height="405" viewBox="0 0 860 405" role="img" aria-labelledby="title description">
+<svg xmlns="http://www.w3.org/2000/svg" width="860" height="597" viewBox="0 0 860 597" role="img" aria-labelledby="title description">
 <title id="title">LHappyCureall — GitHub statistics</title>
 <desc id="description">Public data only. Repository totals include owned forks; source repos exclude forks. Stars and forks are received totals across owned public repos. Issues and PRs are all-time authored public items (open and closed). Languages count the primary language of each non-fork public repo, not code bytes or proficiency. Updated 2026-09-07 00:38 UTC.</desc>
-<rect x="0.5" y="0.5" width="859" height="404" rx="16" fill="#ffffff" stroke="#d1d9e0"/>
+<rect x="0.5" y="0.5" width="859" height="596" rx="16" fill="#ffffff" stroke="#d1d9e0"/>
 <g font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif">
 <text x="32" y="36" font-size="12" fill="#59636e" font-weight="600" text-anchor="start">GITHUB / AT A GLANCE</text>
 <text x="32" y="73" font-size="27" fill="#0969da" font-weight="650" text-anchor="start">LHappyCureall</text>
@@ -29,7 +29,19 @@
 <text x="461" y="318" font-size="16" fill="#59636e" font-weight="400" text-anchor="start">Issues opened</text>
 <text x="828" y="318" font-size="21" fill="#1f2328" font-weight="600" text-anchor="end">0</text>
 <path d="M32 351H828" stroke="#d1d9e0"/>
-<text x="32" y="369" font-size="12" fill="#59636e" font-weight="400" text-anchor="start">Public data only · Issues / PRs: all time</text>
-<text x="828" y="391" font-size="12" fill="#59636e" font-weight="400" text-anchor="end">Updated 2026-09-07 00:38 UTC</text>
+<text x="32" y="383" font-size="19" fill="#0969da" font-weight="600" text-anchor="start">Commit activity</text>
+<rect x="32" y="400" width="250" height="98" rx="10" fill="#f6f8fa"/>
+<text x="48" y="427" font-size="13" fill="#59636e" font-weight="400" text-anchor="start">Total commits · 365 days</text>
+<text x="48" y="473" font-size="32" fill="#1f2328" font-weight="650" text-anchor="start">—</text>
+<rect x="305" y="400" width="250" height="98" rx="10" fill="#f6f8fa"/>
+<text x="321" y="427" font-size="13" fill="#59636e" font-weight="400" text-anchor="start">Of which private · 365 days</text>
+<text x="321" y="473" font-size="32" fill="#1f2328" font-weight="650" text-anchor="start">—</text>
+<rect x="578" y="400" width="250" height="98" rx="10" fill="#f6f8fa"/>
+<text x="594" y="427" font-size="13" fill="#59636e" font-weight="400" text-anchor="start">Total commits · 30 days</text>
+<text x="594" y="473" font-size="32" fill="#1f2328" font-weight="650" text-anchor="start">—</text>
+<text x="32" y="524" font-size="12" fill="#59636e" font-weight="400" text-anchor="start">Commit totals await private-repository access; unavailable values are not zero.</text>
+<path d="M32 543H828" stroke="#d1d9e0"/>
+<text x="32" y="561" font-size="12" fill="#59636e" font-weight="400" text-anchor="start">Repository / community metrics: public data</text>
+<text x="828" y="583" font-size="12" fill="#59636e" font-weight="400" text-anchor="end">Updated 2026-09-07 00:38 UTC</text>
 </g>
 </svg>

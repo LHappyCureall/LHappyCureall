@@ -11,11 +11,11 @@ Focusing on **phase-field models**, **mass-preserving schemes**, and **high-perf
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="./assets/github-stats-dark.svg">
     <source media="(prefers-color-scheme: light)" srcset="./assets/github-stats-light.svg">
-    <img alt="LHappyCureall's public GitHub statistics: repositories, stars received, forks received, followers, following, pull requests, and issues" src="./assets/github-stats-light.svg" width="860">
+    <img alt="LHappyCureall's GitHub statistics: public repositories and community activity, commits in the last 365 days, private commits in that period, and commits in the last 30 days" src="./assets/github-stats-light.svg" width="860">
   </picture>
 </a>
 
-<sub>Public GitHub activity. Stars and forks are received totals; issues and pull requests include open and closed items. [About these statistics](./.github/PROFILE-STATS.md).</sub>
+<sub>Repository and community metrics use public data. Commit totals cover my authored commits on default branches of accessible owned repositories, including private repositories; only aggregate counts are published. [Scope and counting rules](./.github/PROFILE-STATS.md).</sub>
 
 ---
 
