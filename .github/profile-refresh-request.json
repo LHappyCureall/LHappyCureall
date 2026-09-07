@@ -1,4 +1,4 @@
 {
-  "requested_at": "2026-09-07T00:38:10Z",
-  "reason": "每日检查发现漏更新，请刷新今日公开主页统计。"
+  "requested_at": "2026-09-07T06:59:51Z",
+  "reason": "User configured the read-only statistics secret; refresh aggregate commit totals."
 }
