@@ -1,11 +1,44 @@
 # Hi, I'm Haochen Liu 👋
+PhD Candidate in Computational Mathematics at the University of Macau  @ University of Macau.
 
-PhD Candidate in Computational Mathematics @ University of Macau  
+I develop and investigate numerical methods for incompressible two-phase flows,
+with a focus on phase-wise mass preservation, fully implicit finite element
+discretizations, and scalable nonlinear/linear solvers.
+
+My work connects mathematical modeling, numerical algorithm design,
+C++ solver implementation, and verification through convergence studies
+and large-scale parallel experiments.
+ 
 Focusing on **phase-field models**, **mass-preserving schemes**, and **high-performance finite element methods** for incompressible two-phase flows.
+
+
+## 🔬 Research Highlights
+
+### Separate mass-preserving and fully coupled two-phase flow simulation
+
+**Research challenge.** Maintaining phase-wise mass constraints during interface
+deformation and topological changes, while solving the coupled flow and
+phase-field equations reliably over long simulation times.
+
+**Numerical approach.** The SMP-ACNS formulation uses Heaviside-based phase
+constraints and two Lagrange multipliers. The numerical algorithm combines
+a fully implicit Crank–Nicolson finite element discretization with
+phase-wise mass projection after the nonlinear solve.
+
+**Implementation work.** I implement and test the coupled solver in C++ using
+libMesh and PETSc, including discrete residual evaluation, approximate
+analytic Jacobian assembly, multiplier updates, and the integration of
+Newton–Krylov–Schwarz iterations with mass correction.
+
+**Verification.** I use manufactured-solution convergence tests and benchmark
+problems involving bubble merging, rising, and three-dimensional pinch-off.
+The numerical assessment includes interface evolution, phase-wise mass
+variation, energy behavior, and parallel scalability.
+
 
 [GitHub](https://github.com/LHappyCureall) · [Repositories](https://github.com/LHappyCureall?tab=repositories) · [Email](mailto:l18340091052@gmail.com) · [Simulation gallery](#-simulation-gallery)
 
-### 📈 GitHub at a Glance
+## 📈 GitHub at a Glance
 
 <!-- PROFILE-STATS:START -->
 <a href="https://github.com/LHappyCureall">
@@ -23,7 +56,7 @@ Focusing on **phase-field models**, **mass-preserving schemes**, and **high-perf
 
 ---
 
-### 🔭 Research Interests
+## 🔭 Research Interests
 - Two-phase incompressible flow model
 - Separate-Mass-Preserving Allen-Cahn-Navier-Stokes (SMP-ACNS) model
 - Moving contact lines with generalized Navier boundary conditions（GNBC）
@@ -35,29 +68,36 @@ Focusing on **phase-field models**, **mass-preserving schemes**, and **high-perf
 
 ---
 
-### 💻 Tech Stack
-`C++` `PETSc` `libMesh` `Python` `MATLAB` `FreeFem++` `ParaView` `Tecplot`
+## 💻 Tech Stack
+`C++` `PETSc` `libMesh` `Python` `MATLAB` `FreeFem++` `ParaView` `Tecplot` `COMSOL Multiphysics`
+- **C++ / libMesh:** Finite element implementation and coupled-system assembly.
+- **PETSc:** Nonlinear and linear solver integration using SNES and KSP.
+- **ParaView / Tecplot:** Visualization and analysis of simulation results.
+- **COMSOL Multiphysics** Familiarity with multiphysics model setup, meshing, and post-processing. 
 
 ---
 
-### 🌱 Currently Working On
+## 🌱 Currently Working On
 - Fully-coupled, second-order energy-stable schemes for two-phase flows with generalized Navier boundary conditions
 - Large-scale simulations on Tianhe supercomputer
 - Design a fully coupled, second-order numerical scheme with unconditional energy decay multiphase flow models with surfactants to simulate the impact of a drop on a substrate.
 
 ---
 
-### 📫 Contact
+## 📫 Contact
 - Email: l18340091052@gmail.com
 - Academic: yc37477@umac.mo
 - Github: https://github.com/LHappyCureall
 
 ---
 
-### 📊 Simulation Gallery
+## 📊 Simulation Gallery
 <!-- 这里放你的 gif 动画 -->
 #### Milkcrown Re = 20
-[![Re200](./gif/Re200.gif)](./Re20.mp4)
+[![Re20](./gif/Re20.gif)](./Re20.mp4)
+
+#### Milkcrown Re = 200
+[![Re200](./gif/Re200.gif)](./Re200.mp4)
 
 #### Milkcrown Re = 500
 [![Re500](./gif/Re500.gif)](./Re500.mp4)
