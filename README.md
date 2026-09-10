@@ -82,14 +82,14 @@ variation, energy behavior, and parallel scalability.
 - Large-scale simulations on Tianhe supercomputer
 - Design a fully coupled, second-order numerical scheme with unconditional energy decay multiphase flow models with surfactants to simulate the impact of a drop on a substrate.
 
-  ### ⚡ Selected Parallel Performance
+## ⚡ Selected Parallel Performance
 
 A fixed-size strong-scaling experiment for the fully coupled SMP-ACNS solver:
 
 - Degrees of freedom: 42,253,926
 - Benchmark length: 5 time steps
 - Time-step size: 0.01
-- Solver configuration: Schwarz preconditioning, ILU(2), and GMRES restart 50
+- Solver configuration: Schwarz preconditioning, ILU(1), and GMRES restart 50
 - Reported speedup and efficiency are relative to the 256 baseline
 
 | Parallel size (`np`) | Nonlinear iteration | Linear iteration| Reported time (s) | Relative speedup | Parallel efficiency |
