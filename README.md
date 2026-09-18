@@ -9,7 +9,7 @@ My work connects mathematical modeling, numerical algorithm design,
 C++ solver implementation, and verification through convergence studies
 and large-scale parallel experiments.
  
-Focusing on **phase-field models**, **mass-preserving schemes**, and **high-performance finite element methods** for incompressible two-phase flows.
+Focusing on **Cahn--Hilliard--Navier--Stokes equations**, **Allen--Cahn--Navier--Stokes equations**, **Incompressible phase-field models**, **Mass-preserving schemes**, and **High-performance finite element methods** for incompressible two-phase flows.
 
 
 ## 🔬 Research Highlights
