@@ -43,13 +43,13 @@ variation, energy behavior, and parallel scalability.
 <!-- PROFILE-STATS:START -->
 <a href="https://github.com/LHappyCureall">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/LHappyCureall/LHappyCureall/main/assets/profile-cards/github-stats-dark-632b0e775de21dcb.svg">
-    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/LHappyCureall/LHappyCureall/main/assets/profile-cards/github-stats-light-632b0e775de21dcb.svg">
-    <img alt="LHappyCureall's GitHub statistics: public repositories and community activity, commits in the last 365 days, private commits in that period, and commits in the last 30 days" src="https://raw.githubusercontent.com/LHappyCureall/LHappyCureall/main/assets/profile-cards/github-stats-light-632b0e775de21dcb.svg" width="860">
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/LHappyCureall/LHappyCureall/main/assets/profile-cards/github-stats-dark-95a4536b5de26135.svg">
+    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/LHappyCureall/LHappyCureall/main/assets/profile-cards/github-stats-light-95a4536b5de26135.svg">
+    <img alt="LHappyCureall's GitHub statistics: public repositories and community activity, commits in the last 365 days, private commits in that period, and commits in the last 30 days" src="https://raw.githubusercontent.com/LHappyCureall/LHappyCureall/main/assets/profile-cards/github-stats-light-95a4536b5de26135.svg" width="860">
   </picture>
 </a>
 
-<sub>Commits (365 days): 193 · Of which private: 150 · Commits (30 days): 40 · Updated 2026-09-28 05:35 UTC.</sub>
+<sub>Commits (365 days): 192 · Of which private: 149 · Commits (30 days): 40 · Updated 2026-09-29 05:52 UTC.</sub>
 <!-- PROFILE-STATS:END -->
 
 <sub>Repository and community metrics use public data. Commit totals cover my authored commits on default branches of accessible owned repositories, including private repositories; only aggregate counts are published. [Scope and counting rules](./.github/PROFILE-STATS.md).</sub>
