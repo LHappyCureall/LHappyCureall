@@ -146,9 +146,8 @@ rather than a comparison against a different numerical algorithm.
 [![0814-120theta.gif](./gif/0814-120theta.gif)](./gif/0814-120theta.gif)
 
 #### Evolution of the droplet interface and the associated surfactant distribution.
-		The interface is represented by the phase-field zero isosurface,
-		$`\phi=0`$, and colored by the local surfactant concentration $`\psi`$
-		evaluated on it. 
+
+The interface is represented by the phase-field zero isosurface, $\phi=0$, and colored by the local surfactant concentration $\psi$ evaluated on it. 
   
 [![0910-psi.gif](./gif/0910-psi.gif)](./gif/0910-psi.gif)
 
