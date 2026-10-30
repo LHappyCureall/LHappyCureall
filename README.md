@@ -151,4 +151,14 @@ The interface is represented by the phase-field zero isosurface, $\phi=0$, and c
   
 [![0910-psi.gif](./gif/0910-psi.gif)](./gif/0910-psi.gif)
 
+#### Effect of surfactant on droplet impact and rebound
+
+[![comparison_general1030.gif](./gif/comparison_general1030.gif)](./gif/comparison_general1030.gif)
+[![0911-14-100.gif](./gif/0911-14-100.gif)](./gif/0911-14-100.gif)
+
+
+
+
+
+
 
