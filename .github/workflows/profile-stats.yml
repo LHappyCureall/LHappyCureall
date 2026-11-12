@@ -1,16 +1,7 @@
 name: Update profile statistics
 
 on:
-  schedule:
-    # 08:23 Asia/Macau; GitHub may delay scheduled runs.
-    - cron: '23 0 * * *'
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - '.github/scripts/update_profile.py'
-      - '.github/workflows/profile-stats.yml'
-      - '.github/profile-refresh-request.json'
 
 permissions:
   contents: write

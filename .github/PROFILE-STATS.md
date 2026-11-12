@@ -11,21 +11,13 @@ supplies a small text line with the three commit totals and its UTC update time,
 so the numbers remain readable while an image is loading or cached. Unavailable
 totals are labeled `unavailable`, never zero.
 
-The `Update profile statistics` workflow refreshes them daily at approximately
-08:23 Asia/Macau and can be run manually from the Actions tab. GitHub can delay
-scheduled runs and disables scheduled workflows in public repositories after
-60 days without repository activity; re-enable the workflow if that happens.
+Daily updates run on Windows. The local task checks the snapshot at 08:23
+Asia/Macau and at sign-in, and skips publication if today's statistics are
+already complete. It uses the local Git login to publish refreshed assets.
+The `Update profile statistics` workflow in GitHub Actions is a manual fallback:
+choose **Run workflow** on the Actions tab to start it.
 
-A Scheduled task in the desktop app also checks the published snapshot every day
-at 08:35 Asia/Macau. When today's update is missing and no statistics job is
-running, it requests a refresh by committing a new timestamp to
-`.github/profile-refresh-request.json`. This path is a push trigger for the same
-workflow, so the task can use ordinary Git authentication without a personal
-access token or additional Actions API permissions. The request file contains no
-statistics; the workflow still fetches all numbers directly from GitHub.
-The desktop app and computer must be running for this local backup check.
-
-Public metrics use Python's standard library and the workflow's built-in
+In the manual workflow, public metrics use Python's standard library and the built-in
 `GITHUB_TOKEN`. The three commit totals also use the read-only
 `PROFILE_STATS_TOKEN` secret to access owned private repositories. The workflow
 continues to use its separate built-in token with `contents: write` only to save
@@ -78,7 +70,7 @@ written to the SVG, JSON, README, or logs. API paths and error response bodies a
 from error messages. Private data is aggregated in memory. Coding hours and
 visitor counts are not inferred.
 
-## Enable private commit statistics (one-time setup)
+## Enable private commit statistics for the manual Actions workflow
 
 1. Create a [fine-grained personal access token](https://github.com/settings/personal-access-tokens/new)
    for resource owner **LHappyCureall**, with **All repositories** and repository
@@ -87,8 +79,8 @@ visitor counts are not inferred.
 2. In this profile repository's [Actions secrets](https://github.com/LHappyCureall/LHappyCureall/settings/secrets/actions),
    add a repository secret named **PROFILE_STATS_TOKEN**, with that token as the
    value. Paste it directly into GitHub; never send it in chat or commit it.
-3. From Actions, manually run **Update profile statistics**, or let the next
-   daily run refresh the card. Merely adding a secret does not trigger a run.
+3. From Actions, manually run **Update profile statistics**. Changing an Actions
+   secret does not trigger the workflow or change the local Windows credential.
 
 On token expiry, replace the secret and rerun the workflow. The public profile
 exposes only the three aggregate numbers; the private repositories remain private.
