@@ -1,14 +1,14 @@
 {
   "login": "LHappyCureall",
   "joined": "2021-05-27",
-  "updated": "2026-11-24 00:23 UTC",
+  "updated": "2026-11-25 00:23 UTC",
   "public_repos": 21,
   "source_repos": 4,
   "stars_received": 6,
   "forks_received": 0,
   "followers": 8,
   "following": 34,
-  "pull_requests": 0,
+  "pull_requests": 1,
   "issues": 0,
   "languages": {
     "Python": 1
@@ -17,11 +17,11 @@
   "commit_stats": {
     "status": "complete",
     "total_365d": 237,
-    "private_365d": 146,
-    "total_30d": 35,
-    "window_end": "2026-11-24T00:23:04Z",
-    "since_365d": "2025-11-24T00:23:04Z",
-    "since_30d": "2026-10-25T00:23:04Z",
+    "private_365d": 145,
+    "total_30d": 36,
+    "window_end": "2026-11-25T00:23:04Z",
+    "since_365d": "2025-11-25T00:23:04Z",
+    "since_30d": "2026-10-26T00:23:04Z",
     "repository_scope": "owned_repositories_accessible_to_token",
     "branch_scope": "default_branch",
     "date_basis": "committer_date",
